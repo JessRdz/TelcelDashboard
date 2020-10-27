@@ -1,0 +1,70 @@
+<br><br><br>
+<div class="row">
+  <div class="col-2"></div>
+
+  <div class="col-8">
+    <mdb-card>
+      <!--Card content-->
+      <mdb-card-body>
+
+        <table mdbTable hover="true">
+          <thead class="blue white-text">
+            <tr>
+              <th *ngFor="let head of notigicationKeys" scope="col">{{head}} </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr mdbTableCol *ngFor="let noti of notifications" (click)="showNotificationDetails(noti)">
+              <th scope="row">{{noti.type}}</th>
+              <td>{{noti.node}}</td>
+              <td>{{noti.message}}</td>
+              <td>{{noti.newState}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </mdb-card-body>
+    </mdb-card>
+  </div>
+
+  <div class="col-2"></div>
+</div>
+
+<!-- Button trigger modal-->
+<button type="button" id="modalNotificationBtn" (click)="notificationDetailsModal.show()" hidden>prueba</button>
+
+<!-- Modal: Notification Details -->
+<div mdbModal #notificationDetailsModal="mdbModal" class="modal fade" id="modalNotification" tabindex="-1" role="dialog" aria-labelledby="notDetailModalLabel"
+  aria-hidden="true" [config]="{backdrop: false, ignoreBackdropClick: true}">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <!--Header-->
+      <div class="modal-header">
+        <h4 class="modal-title" id="notDetailModalLabel">Detalles de la notificación</h4>
+        <button type="button" class="close" aria-label="Close" (click)="notificationDetailsModal.hide()">
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+      <!--Body-->
+      <div class="modal-body">
+        <p><strong>Host: </strong> {{ currentNotification.node }}</p>
+        <p><strong>Tipo: </strong> {{ currentNotification.type }}</p>
+        <p><strong>Mensaje: </strong> {{ currentNotification.message }}</p>
+
+        <p><strong>Estado: </strong>
+          <select [(ngModel)]="currentNotification.newState" (change)="currentNotification.changeState()">
+            <option *ngFor="let s of currentNotification.states">
+              {{ s }}
+            </option>
+          </select>
+        </p>
+
+      </div>
+      <!--Footer-->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-primary" (click)="checkNotification(currentNotification); notificationDetailsModal.hide();">Guardar</button>
+        <button type="button" class="btn btn-outline-secondary" (click)="notificationDetailsModal.hide()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Modal: Notification Details -->

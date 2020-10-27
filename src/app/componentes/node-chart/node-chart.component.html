@@ -1,0 +1,28 @@
+<br><br><br>
+
+Índice:
+<select [(ngModel)]="selectedIndex">
+  <option *ngFor="let i of indexes">
+    {{ i }}
+  </option>
+</select>
+<button type="button" class="btn btn-primary" (click)="getData(selectedIndex,'5m')">Aceptar</button>
+<select [(ngModel)]="selectedHost" (change)="update()">
+  <option *ngFor="let h of hosts">
+    {{ h }}
+  </option>
+</select>
+<div *ngIf="selectedHost !== '' && selectedHost !== 'metricslist'">
+  <mdb-card>
+    <p><strong>Host: {{ selectedHost }}</strong></p>
+    <div class="row">
+      <div *ngFor="let metric of metrics">
+        <div style="width: 600px; height: auto;" *ngIf="getDatasets(selectedHost, metric) !== ''">
+          <app-chart [title]="metric" [datasets]="getDatasets(selectedHost, metric)"></app-chart>
+        </div>
+      </div>
+    </div>
+  </mdb-card>
+  <br>
+</div>
+

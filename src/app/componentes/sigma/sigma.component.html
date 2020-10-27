@@ -1,0 +1,281 @@
+<!-- sigma js -->
+<div id="sigma-container"></div>
+
+<!-- hidden -->
+<button
+  id="loadNodeNotifications"
+  type="button"
+  (click)="loadNodeNotifications()"
+  hidden
+></button>
+
+<!-- hidden -->
+
+<!-- MODALS -->
+
+<!-- Button trigger NotificationsModal -->
+<button
+  type="button"
+  id="btnModal"
+  (click)="notificationsModal.show()"
+  hidden
+></button>
+
+<!-- Modal: Notifications -->
+<div
+  mdbModal
+  #notificationsModal="mdbModal"
+  class="modal fade right"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="myModalLabel"
+  aria-hidden="true"
+  [config]="{ backdrop: false, ignoreBackdropClick: false }"
+>
+  <div
+    class="modal-dialog modal-full-height modal-right modal-notify modal-info"
+    role="document"
+  >
+    <div class="modal-content">
+      <!--Header-->
+      <div class="modal-header">
+        <p class="heading lead" id="modalHead"></p>
+
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+          (click)="notificationsModal.hide()"
+        >
+          <span aria-hidden="true" class="white-text">×</span>
+        </button>
+      </div>
+
+      <!--Body-->
+      <div class="modal-body">
+        <div class="text-center">
+          <mdb-icon
+            far
+            icon="file-alt"
+            size="4x"
+            class="mb-3 animated rotateIn"
+          ></mdb-icon>
+          <p>
+            <strong>Últimas notificaciones</strong>
+          </p>
+        </div>
+
+        <hr />
+
+        <strong>Host: </strong><span id="hostText"></span>
+
+        <div
+          *ngFor="let notification of currentNodeNotifications"
+          class="hoverable"
+          (click)="showNotificationDetails(notificationsModal, notification)"
+        >
+          <p>
+            <mdb-icon
+              *ngIf="notification['tipo'] === 'Emergencia'"
+              fas
+              icon="exclamation-triangle"
+              class="yellow-text"
+            ></mdb-icon>
+            <strong> {{ notification["mensaje"] }}</strong>
+          </p>
+        </div>
+      </div>
+
+      <!--Footer-->
+      <div class="modal-footer justify-content-center">
+        <a
+          type="button"
+          mdbBtn
+          color="primary"
+          outline="true"
+          class="waves-effect"
+          data-dismiss="modal"
+          mdbWavesEffect
+          (click)="notificationsModal.hide()"
+          >Cerrar</a
+        >
+        <a
+          type="button"
+          mdbBtn
+          color="secondary"
+          outline="true"
+          class="waves-effect"
+          mdbWavesEffect
+          (click)="notificationsModal.hide()"
+          >Limpiar</a
+        >
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Modal: Notifications -->
+
+<!-- Button trigger modal-->
+<button
+  type="button"
+  id="modalNotificationBtn"
+  (click)="notificationDetailsModal.show()"
+>
+  prueba
+</button>
+
+<!-- Modal: Notification Details -->
+<div
+  mdbModal
+  #notificationDetailsModal="mdbModal"
+  class="modal fade"
+  id="modalNotification"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="notDetailModalLabel"
+  aria-hidden="true"
+  [config]="{ backdrop: false, ignoreBackdropClick: true }"
+>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <!--Header-->
+      <div class="modal-header">
+        <h4 class="modal-title" id="notDetailModalLabel">
+          Detalles de la notificación
+        </h4>
+        <button
+          type="button"
+          class="close"
+          aria-label="Close"
+          (click)="notificationDetailsModal.hide(); notificationsModal.show()"
+        >
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+      <!--Body-->
+      <div class="modal-body">
+        <p><strong>Nodo: </strong> {{ currentNode.name }}</p>
+        <p><strong>Tipo: </strong> {{ currentNotification.type }}</p>
+        <p><strong>Mensaje: </strong> {{ currentNotification.message }}</p>
+        <p><strong>Registro: </strong> {{ currentNotification.date }}</p>
+
+        <p>
+          <strong>Estado: </strong>
+          <select
+            [(ngModel)]="currentNotification.newState"
+            (change)="currentNotification.changeState()"
+          >
+            <option *ngFor="let s of currentNotification.states">
+              {{ s }}
+            </option>
+          </select>
+        </p>
+      </div>
+      <!--Footer-->
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-outline-primary"
+          (click)="
+            checkNotification(currentNotification);
+            notificationDetailsModal.hide();
+            notificationsModal.show()
+          "
+        >
+          Guardar
+        </button>
+        <button
+          type="button"
+          class="btn btn-outline-primary"
+          (click)="
+            notificationDetailsModal.hide();
+            chartModal.show();
+            getNotificationData()
+          "
+        >
+          Ver
+        </button>
+        <button
+          type="button"
+          class="btn btn-outline-secondary"
+          (click)="notificationDetailsModal.hide(); notificationsModal.show()"
+        >
+          Cancelar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Modal: Notification Details -->
+
+<!-- Button trigger Chart -->
+<button
+  type="button"
+  id="btnChartModal"
+  (click)="chartModal.show()"
+  hidden
+></button>
+
+<!-- Modal: Chart -->
+<div
+  mdbModal
+  #chartModal="mdbModal"
+  class="modal fade"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="myModalLabel"
+  aria-hidden="true"
+  [config]="{ backdrop: false, ignoreBackdropClick: false }"
+>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <!--Header-->
+      <div class="modal-header">
+        <p class="heading lead" id="modalHead"></p>
+
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+          (click)="notificationsModal.hide()"
+        >
+          <span aria-hidden="true" class="white-text">×</span>
+        </button>
+      </div>
+
+      <!--Body-->
+      <div class="modal-body">
+        <div class="text-center">
+          <p>
+            <strong>Gráfica</strong>
+          </p>
+        </div>
+
+        <div *ngIf="dataset">
+          <app-chart
+            [title]="currentNotification.metric"
+            [datasets]="getDataset()"
+          ></app-chart>
+        </div>
+      </div>
+
+      <!--Footer-->
+      <div class="modal-footer justify-content-center">
+        <a
+          type="button"
+          mdbBtn
+          color="primary"
+          outline="true"
+          class="waves-effect"
+          data-dismiss="modal"
+          mdbWavesEffect
+          (click)="chartModal.hide(); notificationDetailsModal.show()"
+          >Cerrar</a
+        >
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Modal: Notifications -->
